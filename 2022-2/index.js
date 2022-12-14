@@ -13,41 +13,36 @@ fs.readFile('2022-2/input.txt', 'utf-8', (err, data) => {
 });
 
 const shapeValueDictionary = {
-  X: 1,
-  Y: 2,
-  Z: 3,
+  A: 1,
+  B: 2,
+  C: 3,
 };
 
 const shapeAdvantageDictionary = {
-  X: 'Z', // X rock - Z scissors
-  Y: 'X', // Y paper - X rock
-  Z: 'Y', // Z scissors - Y paper
-};
-
-const normalizeElveShape = (elveShape) => {
-  switch (elveShape) {
-    case 'A':
-      return 'X';
-    case 'B':
-      return 'Y';
-    default:
-      return 'Z';
-  }
+  A: { wins: 'C', loses: 'B' }, // rock
+  B: { wins: 'A', loses: 'C' }, // paper
+  C: { wins: 'B', loses: 'A' }, // scissors
 };
 
 const exec = (input) => {
-  const roundScores = input
-    .map((round) => [normalizeElveShape(round[0]), round[1]])
-    .map((round) => {
-      const [elveShape, playerShape] = round;
-      const shapeValue = shapeValueDictionary[playerShape];
-      if (elveShape === playerShape) return shapeValue + 3;
-      if (elveShape === shapeAdvantageDictionary[playerShape])
-        return shapeValue + 6;
-
-      return shapeValue;
-    });
-  console.log(roundScores);
+  const roundScores = input.map((round) => {
+    const [elveShape, requiredRoundResult] = round;
+    switch (requiredRoundResult) {
+      // lose
+      case 'X':
+        var requiredPlayerShape = shapeAdvantageDictionary[elveShape].wins;
+        return shapeValueDictionary[requiredPlayerShape];
+      // draw
+      case 'Y':
+        return shapeValueDictionary[elveShape] + 3;
+      // win
+      case 'Z':
+        var requiredPlayerShape = shapeAdvantageDictionary[elveShape].loses;
+        return shapeValueDictionary[requiredPlayerShape] + 6;
+      default:
+        return 0;
+    }
+  });
   const totalScore = roundScores.reduce((acc, curr) => acc + curr);
 
   console.log(totalScore);
